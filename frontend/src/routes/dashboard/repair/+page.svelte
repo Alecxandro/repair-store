@@ -153,9 +153,9 @@ onMount(() => {
             </div>
         </div>
     
-        <!-- Search Input -->
+    
         <div class="field">
-            <label class="label">Buscar Reparos</label>
+            
             <div class="control">
                 <input 
                     type="text" 
@@ -334,7 +334,7 @@ onMount(() => {
                             <button type="submit" class="button is-primary">Salvar</button>
                         </div>
                         <div class="control">
-                            <button type="button" class="button is-light" on:click={() => showModal = false}>Cancelar</button>
+                            <button type="button" class="button is-light" on:click={() => showModal = false}>Cancel</button>
                         </div>
                     </div>
                 </form>

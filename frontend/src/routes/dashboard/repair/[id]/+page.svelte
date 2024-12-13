@@ -5,7 +5,7 @@
     import axios from 'axios';
     import Navbar from '$lib/components/Navbar.svelte';
     import 'bulma/css/bulma.min.css';
-
+    import '@fortawesome/fontawesome-free/css/all.min.css';
 
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -55,41 +55,7 @@
         }
     }
 
-    // async function updateRepair() {
-    //     submissionError = null;
-    //     try {
-    //         const token = getToken();
-    //         const response = await axios.put(
-    //             `${API_BASE_URL}/api/repair/repair/update-repair/${repair._id}`, 
-    //             {
-    //                 status: editedRepair.status,
-    //                 deviceType: editedRepair.deviceType,
-    //                 brand: editedRepair.brand,
-    //                 model: editedRepair.model,
-    //                 problemDescription: editedRepair.problemDescription,
-    //                 estimatedCost: editedRepair.estimatedCost,
-    //                 repairNotes: editedRepair.repairNotes,
-    //                 completionDate: editedRepair.completionDate
-    //             }, 
-    //             {
-    //                 headers: { 
-    //                     Authorization: `Bearer ${token}`,
-    //                     'Content-Type': 'application/json'
-    //                 }
-    //             }
-    //         );
-            
-    //         // Immediately update the local repair state
-    //         repair = { ...repair, ...response.data };
-    //         editMode = false;
-            
-    //         // Optional: Add a success notification
-    //         submissionError = null;
-    //     } catch (err) {
-    //         console.error('Repair update error:', err);
-    //         submissionError = err.response?.data?.message || 'Failed to update repair';
-    //     }
-    // }
+    
 
     async function updateRepair() {
     submissionError = null;
@@ -190,7 +156,7 @@
                                 <span class="icon">
                                     <i class="fas {editMode ? 'fa-times' : 'fa-edit'}"></i>
                                 </span>
-                                <span>{editMode ? 'Cancel' : 'Edit'}</span>
+                                <span>{editMode ? 'Cancelar' : 'Editar'}</span>
                             </button>
                             <button 
                                 class="button is-small is-danger" 
@@ -200,7 +166,7 @@
                                 <span class="icon">
                                     <i class="fas fa-trash"></i>
                                 </span>
-                                <span>Delete</span>
+                                <span>Apagar</span>
                             </button>
                         </div>
                     </div>
@@ -215,18 +181,18 @@
                         <div class="content">
                             <div class="columns">
                                 <div class="column">
-                                    <strong>Customer:</strong> 
+                                    <strong>Cliente:</strong> 
                                     {repair.customer ? repair.customer.name : 'N/A'}
                                 </div>
                                 <div class="column">
-                                    <strong>Device:</strong> 
+                                    <strong>Dispositivo:</strong> 
                                     {repair.brand} {repair.model}
                                 </div>
                             </div>
                             
                             <div class="columns">
                                 <div class="column">
-                                    <strong>Device Type:</strong> 
+                                    <strong>Tipo de dispositivo:</strong> 
                                     {repair.deviceType}
                                 </div>
                                 <div class="column">
@@ -239,25 +205,25 @@
                             
                             <div class="columns">
                                 <div class="column">
-                                    <strong>Estimated Cost:</strong> 
+                                    <strong>Preço do reparo:</strong> 
                                     ${repair.estimatedCost}
                                 </div>
                                 {#if repair.completionDate}
                                     <div class="column">
-                                        <strong>Completion Date:</strong> 
+                                        <strong>Data:</strong> 
                                         {new Date(repair.completionDate).toLocaleDateString()}
                                     </div>
                                 {/if}
                             </div>
                             
                             <div class="block">
-                                <strong>Problem Description:</strong>
+                                <strong>Descrição do Problema:</strong>
                                 <p>{repair.problemDescription}</p>
                             </div>
                             
                             {#if repair.repairNotes}
                                 <div class="block">
-                                    <strong>Repair Notes:</strong>
+                                    <strong>Observações:</strong>
                                     <p>{repair.repairNotes}</p>
                                 </div>
                             {/if}
@@ -271,7 +237,7 @@
                                 <div class="control">
                                     <div class="select is-fullwidth">
                                         <select bind:value={editedRepair.status} required>
-                                            <option value="pending">Pending</option>
+                                            <option value="pending">Pendente</option>
                                             <option value="in-progress">In Progress</option>
                                             <option value="completed">Completed</option>
                                             <option value="cancelled">Cancelled</option>
@@ -297,20 +263,20 @@
                             </div>
 
                             <div class="field">
-                                <label class="label">Brand</label>
+                                <label class="label">Marca</label>
                                 <div class="control">
                                     <input 
                                         class="input" 
                                         type="text" 
                                         bind:value={editedRepair.brand} 
-                                        placeholder="Enter brand" 
+                                        placeholder="Insira a marca" 
                                         required
                                     >
                                 </div>
                             </div>
 
                             <div class="field">
-                                <label class="label">Model</label>
+                                <label class="label">Modelo</label>
                                 <div class="control">
                                     <input 
                                         class="input" 
@@ -323,7 +289,7 @@
                             </div>
 
                             <div class="field">
-                                <label class="label">Problem Description</label>
+                                <label class="label">Descrição do problema</label>
                                 <div class="control">
                                     <textarea 
                                         class="textarea" 
@@ -335,7 +301,7 @@
                             </div>
 
                             <div class="field">
-                                <label class="label">Estimated Cost</label>
+                                <label class="label">Preço do reparo</label>
                                 <div class="control">
                                     <input 
                                         class="input" 
@@ -350,7 +316,7 @@
                             </div>
 
                             <div class="field">
-                                <label class="label">Repair Notes (Optional)</label>
+                                <label class="label">Observações (Opcional)</label>
                                 <div class="control">
                                     <textarea 
                                         class="textarea" 
@@ -361,7 +327,7 @@
                             </div>
 
                             <div class="field">
-                                <label class="label">Completion Date (Optional)</label>
+                                <label class="label">Data (opcional)</label>
                                 <div class="control">
                                     <input 
                                         class="input" 
@@ -373,7 +339,7 @@
 
                             <div class="field is-grouped">
                                 <div class="control">
-                                    <button type="submit" class="button is-primary">Update Repair</button>
+                                    <button type="submit" class="button is-primary">Atualizar</button>
                                 </div>
                                 <div class="control">
                                     <button 
@@ -381,7 +347,7 @@
                                         class="button is-light" 
                                         on:click={() => editMode = false}
                                     >
-                                        Cancel
+                                        Cancelar
                                     </button>
                                 </div>
                             </div>

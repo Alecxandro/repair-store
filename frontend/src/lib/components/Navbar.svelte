@@ -41,12 +41,7 @@
 
     <div class="navbar-menu">
         <div class="navbar-start">
-            <a 
-                href="/dashboard" 
-                class="navbar-item {isActive('/dashboard') ? 'is-active' : ''}"
-            >
-                Início
-            </a>
+            
 
             <a 
                 href="/dashboard/customers" 
