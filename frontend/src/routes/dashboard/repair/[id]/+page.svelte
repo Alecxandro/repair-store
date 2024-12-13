@@ -6,8 +6,10 @@
     import Navbar from '$lib/components/Navbar.svelte';
     import 'bulma/css/bulma.min.css';
 
+
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
+    
     let repair = null;
     let loading = true;
     let error = null;
@@ -173,7 +175,7 @@
             <div class="card">
                 <header class="card-header">
                     <p class="card-header-title">
-                        Repair Details - {repair.deviceType}
+                        Reparo - {repair.deviceType}
                     </p>
                     <div class="card-header-icon">
                         <div class="buttons">

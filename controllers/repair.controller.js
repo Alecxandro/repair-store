@@ -16,7 +16,6 @@ export const createRepair = async (req, res) => {
       })
     }
 
-    // Create a new repair document
     const newRepair = await Repair.create({
       customer: customer._id,
       deviceType,
@@ -45,7 +44,6 @@ export const getRepairs = async (req, res) => {
     }).select('_id')
     const customerIds = customers.map((customer) => customer._id)
 
-    // Fetch repairs for those customers
     const repairs = await Repair.find({
       customer: {
         $in: customerIds,
@@ -70,7 +68,6 @@ export const getRepairs = async (req, res) => {
 
 export const getRepair = async (req, res) => {
   try {
-    
     const repair = await Repair.findById(req.params.id).populate('customer', 'name email')
     if (!repair) {
       return res.status(404).json({
@@ -88,103 +85,84 @@ export const getRepair = async (req, res) => {
 
 export const updateRepair = async (req, res) => {
   try {
-      const { id } = req.params;
+    const { id } = req.params
 
-      // Validate mongoose ObjectId
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-          return res.status(400).json({ message: 'Invalid repair ID' });
-      }
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid repair ID' })
+    }
 
-      // Fields that can be updated
-      const updateFields = {
-          deviceType: req.body.deviceType,
-          brand: req.body.brand,
-          model: req.body.model,
-          problemDescription: req.body.problemDescription,
-          estimatedCost: req.body.estimatedCost,
-          status: req.body.status,
-          repairNotes: req.body.repairNotes,
-          completionDate: req.body.completionDate
-      };
+    const updateFields = {
+      deviceType: req.body.deviceType,
+      brand: req.body.brand,
+      model: req.body.model,
+      problemDescription: req.body.problemDescription,
+      estimatedCost: req.body.estimatedCost,
+      status: req.body.status,
+      repairNotes: req.body.repairNotes,
+      completionDate: req.body.completionDate,
+    }
 
-      // Remove undefined fields
-      Object.keys(updateFields).forEach(key => 
-          updateFields[key] === undefined && delete updateFields[key]
-      );
+    Object.keys(updateFields).forEach((key) => updateFields[key] === undefined && delete updateFields[key])
 
-      // Update repair with validation
-      const updatedRepair = await Repair.findByIdAndUpdate(
-          id, 
-          updateFields, 
-          { 
-              new: true,        // Return updated document
-              runValidators: true // Run model validations on update
-          }
-      );
+    const updatedRepair = await Repair.findByIdAndUpdate(id, updateFields, {
+      new: true,
+      runValidators: true,
+    })
 
-      
-      if (!updatedRepair) {
-          return res.status(404).json({ message: 'Repair record not found' });
-      }
+    if (!updatedRepair) {
+      return res.status(404).json({ message: 'Repair record not found' })
+    }
 
-      res.status(200).json({
-          message: 'Repair record updated successfully',
-          repair: updatedRepair
-      });
+    res.status(200).json({
+      message: 'Repair record updated successfully',
+      repair: updatedRepair,
+    })
   } catch (error) {
-      // Handle validation errors
-      if (error.name === 'ValidationError') {
-          return res.status(400).json({
-              message: 'Invalid update data',
-              errors: Object.values(error.errors).map(err => err.message)
-          });
-      }
-      
-      res.status(500).json({
-          message: 'Error updating repair record',
-          error: error.message
-      });
-  }
-};
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        message: 'Invalid update data',
+        errors: Object.values(error.errors).map((err) => err.message),
+      })
+    }
 
+    res.status(500).json({
+      message: 'Error updating repair record',
+      error: error.message,
+    })
+  }
+}
 
 export const getLatestRepairs = async (req, res) => {
-    try {
-        // Default to 5, but allow custom limit via query parameter
-        const limit = parseInt(req.query.limit) || 5;
+  try {
+    const limit = parseInt(req.query.limit) || 5
 
-        const latestRepairs = await Repair.find()
-            .sort({ createdAt: -1 })
-            .limit(limit)
-            .populate({
-                path: 'customer',
-                select: 'name email phone' // Select specific customer fields
-            });
+    const latestRepairs = await Repair.find().sort({ createdAt: -1 }).limit(limit).populate({
+      path: 'customer',
+      select: 'name email phone',
+    })
 
-        if (!latestRepairs.length) {
-            return res.status(404).json({ message: "No repairs found" });
-        }
-
-        return res.status(200).json(latestRepairs);
-    } catch (error) {
-        console.error("Error fetching latest repairs:", error);
-        return res.status(500).json({ message: "An error occurred while fetching the latest repairs." });
+    if (!latestRepairs.length) {
+      return res.status(404).json({ message: 'No repairs found' })
     }
-};
+
+    return res.status(200).json(latestRepairs)
+  } catch (error) {
+    console.error('Error fetching latest repairs:', error)
+    return res.status(500).json({ message: 'An error occurred while fetching the latest repairs.' })
+  }
+}
 
 export const deleteRepair = async (req, res) => {
   try {
-    const repair = await Repair.findByIdAndDelete(req.params.id);
-    
+    const repair = await Repair.findByIdAndDelete(req.params.id)
+
     if (!repair) {
-      return res.status(404).json({ message: "Repair not found" });
+      return res.status(404).json({ message: 'Repair not found' })
     }
-    
-    res.status(200).json({ message: "Repair deleted successfully" });
-    
+
+    res.status(200).json({ message: 'Repair deleted successfully' })
   } catch (error) {
-    console.error("Error deleting repair:", error);
-    res.status(500).json({ message: "An error occurred while deleting the repair." });
-  
-}
+    console.error('Error deleting repair:', error)
+    res.status(500).json({ message: 'An error occurred while deleting the repair.' })
+  }
 }

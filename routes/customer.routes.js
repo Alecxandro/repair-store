@@ -1,5 +1,12 @@
 import express from 'express'
-import { createCustomer, getAllCustomers, updateCustomer, getCustomerById, deleteCustomer, getCustomerRepairs } from '../controllers/customer.controller.js'
+import {
+  createCustomer,
+  getAllCustomers,
+  updateCustomer,
+  getCustomerById,
+  deleteCustomer,
+  getCustomerRepairs,
+} from '../controllers/customer.controller.js'
 import { protect } from '../middleware/auth.middleware.js'
 
 const router = express.Router()
@@ -11,4 +18,4 @@ router.get('/get-customer/:id', protect, getCustomerById)
 router.get('/get-customers', protect, getAllCustomers)
 router.get('/get-customers-repairs/:id', protect, getCustomerRepairs)
 
-export default router;
+export default router

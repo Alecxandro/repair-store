@@ -14,7 +14,7 @@ export const apiStatus = async (req, res) => {
       version: '1.0.0',
       status: 'healthy',
       currentTime: new Date().toISOString(),
-      uptime: process.uptime(), // Server uptime in seconds
+      uptime: process.uptime(),
       environment: process.env.NODE_ENV || 'development',
       endpoints: ['/api/repairs', '/api/customers', '/api/auth'],
       systemInfo: {
@@ -36,7 +36,6 @@ export const apiStatus = async (req, res) => {
 
     res.status(200).json(status)
   } catch (error) {
-    // Fallback error response
     res.status(500).json({
       service: 'Repair Management API',
       status: 'error',

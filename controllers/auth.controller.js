@@ -1,17 +1,15 @@
-import User from "../models/User.js"
-import jwt from "jsonwebtoken"
-import { validationResult } from "express-validator"
+import User from '../models/User.js'
+import jwt from 'jsonwebtoken'
+import { validationResult } from 'express-validator'
 
 const createToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" })
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 }
 
 export const registerUser = async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    return res
-      .status(400)
-      .json({ message: "Invalid input", errors: errors.array() })
+    return res.status(400).json({ message: 'Invalid input', errors: errors.array() })
   }
 
   try {
@@ -19,7 +17,7 @@ export const registerUser = async (req, res) => {
 
     const existingUser = await User.findOne({ email })
     if (existingUser) {
-      return res.status(409).json({ message: "User already registered" })
+      return res.status(409).json({ message: 'User already registered' })
     }
 
     const user = new User({ username, email, password })
@@ -34,32 +32,28 @@ export const registerUser = async (req, res) => {
       token,
     })
   } catch (error) {
-    console.error("Error registering user:", error)
-    return res
-      .status(500)
-      .json({ message: "An error occurred while registering the user." })
+    console.error('Error registering user:', error)
+    return res.status(500).json({ message: 'An error occurred while registering the user.' })
   }
 }
 
 export const loginUser = async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    return res
-      .status(400)
-      .json({ message: "Invalid input", errors: errors.array() })
+    return res.status(400).json({ message: 'Invalid input', errors: errors.array() })
   }
 
   try {
     const { email, password } = req.body
 
-    const user = await User.findOne({ email }).select("+password")
+    const user = await User.findOne({ email }).select('+password')
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" })
+      return res.status(401).json({ message: 'Invalid email or password' })
     }
 
     const isMatch = await user.matchPassword(password)
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" })
+      return res.status(401).json({ message: 'Invalid email or password' })
     }
 
     const token = createToken(user._id)
@@ -71,26 +65,22 @@ export const loginUser = async (req, res) => {
       token,
     })
   } catch (error) {
-    console.error("Error logging user:", error)
-    return res
-      .status(500)
-      .json({ message: "An error occurred while logging in." })
+    console.error('Error logging user:', error)
+    return res.status(500).json({ message: 'An error occurred while logging in.' })
   }
 }
 
 export const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password")
+    const user = await User.findById(req.user.id).select('-password')
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" })
+      return res.status(404).json({ message: 'User not found' })
     }
 
     return res.status(200).json(user)
   } catch (error) {
-    console.error("Error getting user profile:", error)
-    return res
-      .status(500)
-      .json({ message: "An error occurred while fetching user profile." })
+    console.error('Error getting user profile:', error)
+    return res.status(500).json({ message: 'An error occurred while fetching user profile.' })
   }
 }
