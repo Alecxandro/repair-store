@@ -1,4 +1,5 @@
 import Customer from "../models/Customer.js";
+import Repair from "../models/Repair.js";
 import { validationResult } from "express-validator";
 
 export const createCustomer = async (req, res) => {
@@ -93,3 +94,30 @@ export const deleteCustomer = async (req, res) => {
         return res.status(500).json({ message: "An error occurred while deleting the customer." });
     }
 };
+
+export const getLatestCustomers = async (req, res) => {
+    try {
+        const latestCustomers = await Customer.find({ user: req.user.id })
+            .sort({ createdAt: -1 }) // Sort by creation date in descending order
+            .limit(5) // Limit to 5 most recent customers
+            .populate("user", ["name", "email"]);
+
+        if (!latestCustomers.length) {
+            return res.status(404).json({ message: "No customers found" });
+        }
+
+        return res.status(200).json(latestCustomers);
+    } catch (error) {
+        console.error("Error fetching latest customers:", error);
+        return res.status(500).json({ message: "An error occurred while fetching the latest customers." });
+    }
+};
+
+export const getCustomerRepairs = async (req, res) => {
+    try {
+        const repairs = await Repair.find({ customer: req.params.id });
+        res.json(repairs);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching customer repairs' });
+    }
+}
