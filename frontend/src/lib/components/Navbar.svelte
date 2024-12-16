@@ -2,11 +2,13 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import 'bulma/css/bulma.min.css';
+    import axios from 'axios';
 
     // Logout function
-    function logout() {
-        localStorage.removeItem('token');
-        goto('/');
+    async function logout() {
+        axios.post('http://localhost:5000/api/repair/auth/logout') 
+        await goto('/')
+        window.location.reload();
     }
 
     // Check if a route is active

@@ -4,14 +4,19 @@
 	import 'bulma/css/bulma.min.css';
 	import { goto } from '$app/navigation';
 	import Navbar from '$lib/components/Navbar.svelte';
+	import { page } from '$app/stores';
 
 	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
+	let submissionError = null;	
+	let customerToDelete = null;
 	let customers = [];
 	let filteredCustomers = [];
 	let isLoading = true;
 	let error = null;
 	let showCreateModal = false;
+	let showDeleteConfirmModal = false;
+	let deleting = false
 	let searchTerm = '';
 	let newCustomer = {
 		name: '',
@@ -20,10 +25,7 @@
 		address: ''
 	};
 
-	function getToken() {
-		return localStorage.getItem('token');
-	}
-
+	
 	function handleError(err, defaultMessage) {
 		error = err.response?.data?.message || defaultMessage;
 		if (err.response?.status === 401) {
@@ -34,13 +36,9 @@
 	async function fetchCustomers() {
 		try {
 			isLoading = true;
-			const token = getToken();
-			if (!token) {
-				goto('/');
-				return;
-			}
+			
 			const response = await axios.get(`${API_BASE_URL}/api/repair/customer/get-customers`, {
-				headers: { Authorization: `Bearer ${token}` }
+				withCredentials: true
 			});
 			customers = response.data;
 			filteredCustomers = customers;
@@ -53,11 +51,11 @@
 
 	async function createCustomer() {
 		try {
-			const token = getToken();
+			
 			const response = await axios.post(
 				`${API_BASE_URL}/api/repair/customer/create-customer`,
 				newCustomer,
-				{ headers: { Authorization: `Bearer ${token}` } }
+				{ withCredentials: true }
 			);
 			customers = [...customers, response.data];
 			filteredCustomers = customers;
@@ -68,19 +66,22 @@
 	}
 
 	async function deleteCustomer(customerId) {
-		if (!confirm('Are you sure you want to delete this customer?')) return;
-
 		try {
-			const token = getToken();
+			
+			
 			await axios.delete(`${API_BASE_URL}/api/repair/customer/delete-customer/${customerId}`, {
-				headers: { Authorization: `Bearer ${token}` }
+				withCredentials: true
 			});
-			customers = customers.filter((customer) => customer._id !== customerId);
-			filteredCustomers = customers;
+
+			
+			location.reload()
 		} catch (err) {
-			handleError(err, 'Failed to delete customer');
+			console.error('Repair deletion error:', err);
+			submissionError = err.response?.data?.message || 'Failed to delete repair';
+			
 		}
 	}
+
 
 	function filterCustomers() {
 		filteredCustomers = customers.filter((customer) =>
@@ -96,7 +97,7 @@
 <Navbar />
 <section class="section">
 	<div class="container">
-		<h1 class="title">Customer Management</h1>
+		<h1 class="title">Gerenciar Clientes</h1>
 
 		{#if error}
 			<div class="notification is-danger">
@@ -138,10 +139,10 @@
 			<table class="table is-fullwidth is-striped is-hoverable">
 				<thead>
 					<tr>
-						<th>Name</th>
-						<th>Email</th>
-						<th>Phone</th>
-						<th>Actions</th>
+						<th>Nome</th>
+						<th>E-mail</th>
+						<th>Telefone</th>
+						<th> Ações</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -156,14 +157,17 @@
 										class="button is-info is-light"
 										on:click={() => goto(`/dashboard/customers/${customer._id}`)}
 									>
-										View
+										Visualizar
 									</button>
 									<button
-										class="button is-danger is-light"
-										on:click={() => deleteCustomer(customer._id)}
-									>
-										Delete
-									</button>
+									class="button is-danger is-light"
+									on:click={() => {
+										customerToDelete = customer;
+										showDeleteConfirmModal = true;
+									}}
+								>
+									Apagar
+								</button>
 								</div>
 							</td>
 						</tr>
@@ -174,12 +178,67 @@
 	</div>
 </section>
 
+{#if showDeleteConfirmModal}
+<div class="modal is-active">
+    <div class="modal-background" on:click={() => {
+        showDeleteConfirmModal = false;
+        customerToDelete = null;
+    }}></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Confirmar exclusão</p>
+            <button 
+                class="delete" 
+                aria-label="close" 
+                on:click={() => {
+                    showDeleteConfirmModal = false;
+                    customerToDelete = null;
+                }}
+            ></button>
+        </header>
+        <section class="modal-card-body">
+           Deseja apagar esse cliente? Essa ação não poderá ser desfeita.
+        </section>
+        <footer class="modal-card-foot">
+            <button 
+                class="button is-danger" 
+                on:click={() => {
+                    if (customerToDelete) {
+                        deleteCustomer(customerToDelete._id);
+                        showDeleteConfirmModal = false;
+                    }
+                }}
+                disabled={deleting}
+            >
+                {#if deleting}
+                    <span class="icon"><i class="fas fa-spinner fa-spin"></i></span>
+                    <span>Apagando...</span>
+                {:else}
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                    <span>Apagar Cliente</span>
+                {/if}
+            </button>
+        
+            <button 
+                class="button ml-2"
+                on:click={() => {
+                    showDeleteConfirmModal = false;
+                    customerToDelete = null;
+                }}
+            >
+                Cancelar
+            </button>
+        </footer>
+    </div>
+</div>
+{/if}
+
 {#if showCreateModal}
 	<div class="modal is-active">
 		<div class="modal-background" on:click={() => (showCreateModal = false)}></div>
 		<div class="modal-card">
 			<header class="modal-card-head">
-				<p class="modal-card-title">cadastrar novo cliente</p>
+				<p class="modal-card-title"><b>Cadastrar Cliente</b></p>
 				<button class="delete" aria-label="close" on:click={() => (showCreateModal = false)}
 				></button>
 			</header>

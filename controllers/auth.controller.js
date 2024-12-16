@@ -58,15 +58,37 @@ export const loginUser = async (req, res) => {
 
     const token = createToken(user._id)
 
+    res.cookie('authToken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000,
+    })
+
     return res.status(200).json({
       id: user._id,
       username: user.username,
       email: user.email,
-      token,
+      //  token,
     })
   } catch (error) {
     console.error('Error logging user:', error)
     return res.status(500).json({ message: 'An error occurred while logging in.' })
+  }
+}
+
+export const logoutUser = (req, res) => {
+  try {
+    res.clearCookie('authToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    })
+
+    return res.status(200).json({ message: 'Logged out successfully' })
+  } catch (error) {
+    console.error('Error logging out user:', error)
+    return res.status(500).json({ message: 'An error occurred while logging out.' })
   }
 }
 
