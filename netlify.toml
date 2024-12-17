@@ -1,7 +1,7 @@
 [build]
   base = "/"
   functions = "netlify/functions"
-  publish = "frontend/dist"
+  publish = "frontend/.svelte-kit/netlify"
   command = "cd frontend && npm install --legacy-peer-deps && npm run build"
   environment = { NODE_VERSION = "20" }
 

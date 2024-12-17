@@ -1,9 +1,7 @@
 [build]
-  base = "/"
-  functions = "../netlify/functions"
-  publish = ".svelte-kit/netlify"
   command = "npm install && npm run build"
-  environment = { NODE_VERSION = "20" }
+  publish = ".svelte-kit/netlify"
+  functions = "../netlify/functions"
 
 [functions]
   node_bundler = "esbuild"
