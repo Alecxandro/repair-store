@@ -2,7 +2,7 @@
   base = "/"
   functions = "netlify/functions"
   publish = "frontend/dist"
-  command = "cd frontend && npm install && npm run build"
+  command = "cd frontend && npm install --legacy-peer-deps && npm run build"
   environment = { NODE_VERSION = "20" }
 
 [functions]
