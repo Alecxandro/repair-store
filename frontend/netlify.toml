@@ -1,7 +1,7 @@
 [build]
   base = "/"
   functions = "../netlify/functions"
-  publish = "dist"
+  publish = ".svelte-kit/netlify"
   command = "npm install && npm run build"
   environment = { NODE_VERSION = "20" }
 
