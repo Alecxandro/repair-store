@@ -6,10 +6,10 @@ const config = {
 	kit: {
 		adapter: adapter({
 			edge: false,
-			split: false
+			split: true
 		}),
-		alias: {
-			$lib: 'src/lib'
+		paths: {
+			base: ''
 		}
 	},
 	preprocess: vitePreprocess()
