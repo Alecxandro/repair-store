@@ -40,7 +40,7 @@ const logger = winston.createLogger({
   ],
 })
 
-const createApp = () => {
+export const createApp = () => {
   const app = express()
 
   app.use(helmet())
@@ -75,7 +75,6 @@ const createApp = () => {
   app.use(express.urlencoded({ extended: true, limit: '10kb' }))
   app.use(cookieParser(process.env.COOKIE_SECRET))
 
-  // Routes
   app.get('/', apiStatus)
   app.use('/api/repair/auth', authRoutes)
   app.use('/api/repair/customer', customerRoutes)
@@ -108,7 +107,9 @@ const startServer = async () => {
   }
 }
 
-startServer()
+if (import.meta.url === `file://${process.argv[1]}`) {
+  startServer()
+}
 
 process.on('uncaughtException', (error) => {
   logger.error('Uncaught Exception', { error })
